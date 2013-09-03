@@ -1,0 +1,7 @@
+{
+  "name": "hello-world",
+  "main": "hello_world.html",
+  "window": {
+    "toolbar": false
+  }
+}
