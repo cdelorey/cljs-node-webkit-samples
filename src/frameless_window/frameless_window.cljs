@@ -1,16 +1,18 @@
 (ns cljs-node-webkit-examples.frameless-window
   (:use [cljs-node-webkit-examples.titlebar :only [focus-titlebars update-content-style
-                                                   add-titlebar remove-titlebar]]))
+                                                   add-titlebar remove-titlebar]]
+        [domina :only [by-id]]
+        [domina.events :only [listen!]]))
 
 (defn reset-checkboxes [boxes]
   (doall 
     (map #(when (aget % "disabled") (aset % "disabled" false)) boxes)))
 
 (defn update-checkbox []
-  (let [top-checkbox (.getElementById js/document "top-box")
-    bottom-checkbox (.getElementById js/document "bottom-box")
-    left-checkbox (.getElementById js/document "left-box")
-    right-checkbox (.getElementById js/document "right-box")]
+  (let [top-checkbox (by-id "top-box")
+    bottom-checkbox (by-id "bottom-box")
+    left-checkbox (by-id "left-box")
+    right-checkbox (by-id "right-box")]
     (cond
       (or (aget bottom-checkbox "checked") (aget top-checkbox "checked"))
       (do
@@ -26,11 +28,11 @@
 (defn init-checkbox
   [checkbox-id titlebar-name titlebar-icon-url titlebar-text]
 
-  (let [elem (.getElementById js/document checkbox-id)]
+  (let [elem (by-id checkbox-id)]
     (when elem
-      (set! (.-onclick elem) 
+      (listen! elem :click 
             #(do
-               (if (.-checked (.getElementById js/document checkbox-id))
+               (if (.-checked (by-id checkbox-id))
                 (add-titlebar titlebar-name titlebar-icon-url titlebar-text)
                 (remove-titlebar titlebar-name titlebar-icon-url titlebar-text))
                (focus-titlebars true)
@@ -44,21 +46,17 @@
     (init-checkbox "left-box" "left-titlebar" "left-titlebar.png" "Left Titlebar")
     (init-checkbox "right-box" "right-titlebar" "right-titlebar.png" "Right Titlebar")
     
-    (set! (.-onclick (.getElementById js/document "close-window-button")) 
-          #(.close js/window))
+    (listen! (by-id "close-window-button") :click #(.close js/window))
     (update-content-style)
     
     (.show (.get (.-Window (js/require "nw.gui"))))))
 
 ;; set handlers
-(set! (.-onfocus js/window) #(do
-                               (.log js/console "focus")
-                               (focus-titlebars true)))
-
-(set! (.-onblur js/window) #(do
-                              (.log js/console "blur")
-                              (focus-titlebars false)))
-
-(set! (.-onresize js/window) update-content-style)
-
-(set! (.-onload js/window) init)
+(listen! js/window :focus #(do
+                             (.log js/console "focus")
+                             (focus-titlebars true)))
+(listen! js/window :blur #(do
+                            (.log js/console "blur")
+                            (focus-titlebars false)))
+(listen! js/window :resize update-content-style)
+(listen! js/window :load init)
