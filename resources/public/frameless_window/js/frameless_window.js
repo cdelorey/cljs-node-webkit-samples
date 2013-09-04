@@ -487,6 +487,19 @@ goog.base = function(me, opt_methodName, var_args) {
 goog.scope = function(fn) {
   fn.call(goog.global)
 };
+goog.provide("goog.debug.Error");
+goog.debug.Error = function(opt_msg) {
+  if(Error.captureStackTrace) {
+    Error.captureStackTrace(this, goog.debug.Error)
+  }else {
+    this.stack = (new Error).stack || ""
+  }
+  if(opt_msg) {
+    this.message = String(opt_msg)
+  }
+};
+goog.inherits(goog.debug.Error, Error);
+goog.debug.Error.prototype.name = "CustomError";
 goog.provide("goog.string");
 goog.provide("goog.string.Unicode");
 goog.string.Unicode = {NBSP:"\u00a0"};
@@ -927,19 +940,6 @@ goog.string.parseInt = function(value) {
   }
   return NaN
 };
-goog.provide("goog.debug.Error");
-goog.debug.Error = function(opt_msg) {
-  if(Error.captureStackTrace) {
-    Error.captureStackTrace(this, goog.debug.Error)
-  }else {
-    this.stack = (new Error).stack || ""
-  }
-  if(opt_msg) {
-    this.message = String(opt_msg)
-  }
-};
-goog.inherits(goog.debug.Error, Error);
-goog.debug.Error.prototype.name = "CustomError";
 goog.provide("goog.asserts");
 goog.provide("goog.asserts.AssertionError");
 goog.require("goog.debug.Error");
@@ -21683,6 +21683,278 @@ cljs.core.special_symbol_QMARK_ = function special_symbol_QMARK_(x) {
   new cljs.core.Symbol(null, ".", ".", -1640531481, null), new cljs.core.Symbol(null, "ns", "ns", -1640528002, null), new cljs.core.Symbol(null, "do", "do", -1640528316, null), new cljs.core.Symbol(null, "fn*", "fn*", -1640430053, null), new cljs.core.Symbol(null, "throw", "throw", -1530191713, null), new cljs.core.Symbol(null, "letfn*", "letfn*", 1548249632, null), new cljs.core.Symbol(null, "js*", "js*", -1640426054, null), new cljs.core.Symbol(null, "defrecord*", "defrecord*", 774272013, null), 
   new cljs.core.Symbol(null, "let*", "let*", -1637213400, null), new cljs.core.Symbol(null, "loop*", "loop*", -1537374273, null), new cljs.core.Symbol(null, "if", "if", -1640528170, null), new cljs.core.Symbol(null, "def", "def", -1640432194, null)]), x)
 };
-goog.provide("cljs_node_webkit_examples.hello_world");
+goog.provide("cljs_node_webkit_examples.titlebar");
 goog.require("cljs.core");
-document.write("Hello, Node!");
+cljs_node_webkit_examples.titlebar.close_window = function close_window() {
+  return window.close()
+};
+cljs_node_webkit_examples.titlebar.update_image_url = function update_image_url(image_id, image_url) {
+  var temp__4090__auto__ = document.getElementById("image_id");
+  if(cljs.core.truth_(temp__4090__auto__)) {
+    var image = temp__4090__auto__;
+    return image.src = image_url
+  }else {
+    return null
+  }
+};
+cljs_node_webkit_examples.titlebar.create_image = function create_image(image_id, image_url) {
+  var image = document.createElement("img");
+  var G__3454 = image;
+  G__3454.setAttribute("id", image_id);
+  G__3454["src"] = image_url;
+  return G__3454
+};
+cljs_node_webkit_examples.titlebar.create_button = function create_button(button_id, button_name, normal_image_url, hover_image_url, click_func) {
+  var button = document.createElement("div");
+  var button_img = cljs_node_webkit_examples.titlebar.create_image.call(null, button_id, normal_image_url);
+  var G__3458 = button;
+  G__3458.setAttribute("class", button_name);
+  G__3458.appendChild(button_img);
+  G__3458["onmouseover"] = function() {
+    return cljs_node_webkit_examples.titlebar.update_image_url.call(null, button_id, hover_image_url)
+  };
+  G__3458["onmouseout"] = function() {
+    return cljs_node_webkit_examples.titlebar.update_image_url.call(null, button_id, normal_image_url)
+  };
+  G__3458["onclick"] = click_func;
+  return G__3458
+};
+cljs_node_webkit_examples.titlebar.focus_titlebars = function focus_titlebars(focus) {
+  var bg_color = cljs.core.truth_(focus) ? "#3a3d3d" : "#7a7c7c";
+  var titlebars = cljs.core.filter.call(null, cljs.core.identity, cljs.core.map.call(null, function(bg_color) {
+    return function(p1__3455_SHARP_) {
+      return document.getElementById(p1__3455_SHARP_)
+    }
+  }(bg_color), cljs.core.PersistentVector.fromArray(["top-titlebar", "bottom-titlebar", "left-titlebar", "right-titlebar"], true)));
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__3456_SHARP_) {
+    return p1__3456_SHARP_.style.backgroundColor = bg_color
+  }, titlebars))
+};
+cljs_node_webkit_examples.titlebar.remove_titlebar = function remove_titlebar(titlebar_name) {
+  var temp__4090__auto__ = document.getElementById(titlebar_name);
+  if(cljs.core.truth_(temp__4090__auto__)) {
+    var titlebar = temp__4090__auto__;
+    return document.body.removeChild(titlebar)
+  }else {
+    return null
+  }
+};
+cljs_node_webkit_examples.titlebar.create_icon = function create_icon(titlebar_name, titlebar_icon_url) {
+  var G__3460 = document.createElement("div");
+  G__3460.setAttribute("class", [cljs.core.str(titlebar_name), cljs.core.str("-icon")].join(""));
+  G__3460.appendChild(cljs_node_webkit_examples.titlebar.create_image.call(null, [cljs.core.str(titlebar_name), cljs.core.str(cljs.core._PLUS_), cljs.core.str("icon")].join(""), titlebar_icon_url));
+  return G__3460
+};
+cljs_node_webkit_examples.titlebar.create_title = function create_title(titlebar_name, titlebar_text) {
+  var G__3462 = document.createElement("div");
+  G__3462.setAttribute("class", [cljs.core.str(titlebar_name), cljs.core.str("-text")].join(""));
+  G__3462["innerText"] = titlebar_text;
+  return G__3462
+};
+cljs_node_webkit_examples.titlebar.create_divider = function create_divider(titlebar_name) {
+  var G__3464 = document.createElement("div");
+  G__3464.setAttribute("class", [cljs.core.str(titlebar_name), cljs.core.str(cljs.core._PLUS_), cljs.core.str("-divider")].join(""));
+  return G__3464
+};
+cljs_node_webkit_examples.titlebar.create_close_button = function create_close_button(titlebar_name) {
+  return cljs_node_webkit_examples.titlebar.create_button.call(null, [cljs.core.str(titlebar_name), cljs.core.str("-close-button")].join(""), [cljs.core.str(titlebar_name), cljs.core.str("-close-button")].join(""), "button_close.png", "button_close_hover.png", cljs_node_webkit_examples.titlebar.close_window)
+};
+cljs_node_webkit_examples.titlebar.add_titlebar = function add_titlebar(titlebar_name, titlebar_icon_url, titlebar_text) {
+  var titlebar = document.createElement("div");
+  var icon = cljs_node_webkit_examples.titlebar.create_icon.call(null, titlebar_name, titlebar_icon_url);
+  var title = cljs_node_webkit_examples.titlebar.create_title.call(null, titlebar_name, titlebar_text);
+  var divider = cljs_node_webkit_examples.titlebar.create_divider.call(null, titlebar_name);
+  var close_button = cljs_node_webkit_examples.titlebar.create_close_button.call(null, titlebar_name);
+  return document.body.appendChild(function() {
+    var G__3466 = titlebar;
+    G__3466.setAttribute("id", titlebar_name);
+    G__3466.setAttribute("class", titlebar_name);
+    G__3466.appendChild(icon);
+    G__3466.appendChild(title);
+    G__3466.appendChild(divider);
+    G__3466.appendChild(close_button);
+    return G__3466
+  }())
+};
+cljs_node_webkit_examples.titlebar.calculate_height = function calculate_height() {
+  var height = window.outerHeight;
+  var top = document.getElementById("top-titlebar");
+  var bottom = document.getElementById("bottom-titlebar");
+  console.log(height);
+  if(cljs.core.truth_(function() {
+    var and__3941__auto__ = bottom;
+    if(cljs.core.truth_(and__3941__auto__)) {
+      return top
+    }else {
+      return and__3941__auto__
+    }
+  }())) {
+    return height - (top.offsetHeight + bottom.offsetHeight)
+  }else {
+    if(cljs.core.truth_(bottom)) {
+      return height - bottom.offsetHeight
+    }else {
+      if(cljs.core.truth_(top)) {
+        return height - top.offsetHeight
+      }else {
+        if("\ufdd0:else") {
+          return height
+        }else {
+          return null
+        }
+      }
+    }
+  }
+};
+cljs_node_webkit_examples.titlebar.calculate_width = function calculate_width() {
+  var width = window.outerWidth;
+  var right = document.getElementById("right-titlebar");
+  var left = document.getElementById("left-titlebar");
+  if(cljs.core.truth_(function() {
+    var and__3941__auto__ = right;
+    if(cljs.core.truth_(and__3941__auto__)) {
+      return left
+    }else {
+      return and__3941__auto__
+    }
+  }())) {
+    return width - (right.offsetWidth + left.offsetWidth)
+  }else {
+    if(cljs.core.truth_(right)) {
+      return width - right.offsetWidth
+    }else {
+      if(cljs.core.truth_(left)) {
+        return width - left.offsetWidth
+      }else {
+        if("\ufdd0:else") {
+          return width
+        }else {
+          return null
+        }
+      }
+    }
+  }
+};
+cljs_node_webkit_examples.titlebar.calculate_left = function calculate_left() {
+  console.log("calculate-left");
+  var temp__4090__auto__ = document.getElementById("left-titlebar");
+  if(cljs.core.truth_(temp__4090__auto__)) {
+    var left_titlebar = temp__4090__auto__;
+    return left_titlebar.offsetWidth
+  }else {
+    return 0
+  }
+};
+cljs_node_webkit_examples.titlebar.calculate_top = function calculate_top() {
+  var temp__4090__auto__ = document.getElementById("top-titlebar");
+  if(cljs.core.truth_(temp__4090__auto__)) {
+    var top_titlebar = temp__4090__auto__;
+    return top_titlebar.offsetHeight
+  }else {
+    return 0
+  }
+};
+cljs_node_webkit_examples.titlebar.update_content_style = function update_content_style() {
+  var temp__4090__auto__ = document.getElementById("content");
+  if(cljs.core.truth_(temp__4090__auto__)) {
+    var content = temp__4090__auto__;
+    var left = cljs_node_webkit_examples.titlebar.calculate_left.call(null);
+    var top = cljs_node_webkit_examples.titlebar.calculate_top.call(null);
+    var width = cljs_node_webkit_examples.titlebar.calculate_width.call(null);
+    var height = cljs_node_webkit_examples.titlebar.calculate_height.call(null);
+    var content_style = [cljs.core.str("position: absolute; "), cljs.core.str("left: "), cljs.core.str(left), cljs.core.str("px; "), cljs.core.str("top: "), cljs.core.str(top), cljs.core.str("px; "), cljs.core.str("width: "), cljs.core.str(width), cljs.core.str("px; "), cljs.core.str("height: "), cljs.core.str(height), cljs.core.str("px; ")].join("");
+    console.log("updating");
+    console.log(content_style);
+    return content.setAttribute("style", content_style)
+  }else {
+    return null
+  }
+};
+goog.provide("cljs_node_webkit_examples.frameless_window");
+goog.require("cljs.core");
+goog.require("cljs_node_webkit_examples.titlebar");
+goog.require("cljs_node_webkit_examples.titlebar");
+cljs_node_webkit_examples.frameless_window.reset_checkboxes = function reset_checkboxes(boxes) {
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__3453_SHARP_) {
+    if(cljs.core.truth_(p1__3453_SHARP_["disabled"])) {
+      return p1__3453_SHARP_["disabled"] = false
+    }else {
+      return null
+    }
+  }, boxes))
+};
+cljs_node_webkit_examples.frameless_window.update_checkbox = function update_checkbox() {
+  var top_checkbox = document.getElementById("top-box");
+  var bottom_checkbox = document.getElementById("bottom-box");
+  var left_checkbox = document.getElementById("left-box");
+  var right_checkbox = document.getElementById("right-box");
+  if(cljs.core.truth_(function() {
+    var or__3943__auto__ = bottom_checkbox["checked"];
+    if(cljs.core.truth_(or__3943__auto__)) {
+      return or__3943__auto__
+    }else {
+      return top_checkbox["checked"]
+    }
+  }())) {
+    right_checkbox["disabled"] = true;
+    return left_checkbox["disabled"] = true
+  }else {
+    if(cljs.core.truth_(function() {
+      var or__3943__auto__ = right_checkbox["checked"];
+      if(cljs.core.truth_(or__3943__auto__)) {
+        return or__3943__auto__
+      }else {
+        return left_checkbox["checked"]
+      }
+    }())) {
+      top_checkbox["disabled"] = true;
+      return bottom_checkbox["disabled"] = true
+    }else {
+      if("\ufdd0:else") {
+        return cljs_node_webkit_examples.frameless_window.reset_checkboxes.call(null, cljs.core.PersistentVector.fromArray([top_checkbox, bottom_checkbox, left_checkbox, right_checkbox], true))
+      }else {
+        return null
+      }
+    }
+  }
+};
+cljs_node_webkit_examples.frameless_window.init_checkbox = function init_checkbox(checkbox_id, titlebar_name, titlebar_icon_url, titlebar_text) {
+  var elem = document.getElementById(checkbox_id);
+  console.log(elem);
+  if(cljs.core.truth_(elem)) {
+    return elem.onclick = function() {
+      if(cljs.core.truth_(document.getElementById(checkbox_id).checked)) {
+        cljs_node_webkit_examples.titlebar.add_titlebar.call(null, titlebar_name, titlebar_icon_url, titlebar_text)
+      }else {
+        cljs_node_webkit_examples.titlebar.remove_titlebar.call(null, titlebar_name, titlebar_icon_url, titlebar_text)
+      }
+      console.log("in do");
+      cljs_node_webkit_examples.titlebar.focus_titlebars.call(null, true);
+      cljs_node_webkit_examples.titlebar.update_content_style.call(null);
+      return cljs_node_webkit_examples.frameless_window.update_checkbox.call(null)
+    }
+  }else {
+    return null
+  }
+};
+cljs_node_webkit_examples.frameless_window.init = function init() {
+  cljs_node_webkit_examples.frameless_window.init_checkbox.call(null, "top-box", "top-titlebar", "top-titlebar.png", "Top Titlebar");
+  cljs_node_webkit_examples.frameless_window.init_checkbox.call(null, "bottom-box", "bottom-titlebar", "bottom-titlebar.png", "Bottom Titlebar");
+  cljs_node_webkit_examples.frameless_window.init_checkbox.call(null, "left-box", "left-titlebar", "left-titlebar.png", "Left Titlebar");
+  cljs_node_webkit_examples.frameless_window.init_checkbox.call(null, "right-box", "right-titlebar", "right-titlebar.png", "Right Titlebar");
+  document.getElementById("close-window-button").onclick = function() {
+    return window.close()
+  };
+  cljs_node_webkit_examples.titlebar.update_content_style.call(null);
+  return require("nw.gui").Window.get().show()
+};
+window.onfocus = function() {
+  console.log("focus");
+  return cljs_node_webkit_examples.titlebar.focus_titlebars.call(null, true)
+};
+window.onblur = function() {
+  console.log("blur");
+  return cljs_node_webkit_examples.titlebar.focus_titlebars.call(null, false)
+};
+window.onresize = cljs_node_webkit_examples.titlebar.update_content_style;
+window.onload = cljs_node_webkit_examples.frameless_window.init;

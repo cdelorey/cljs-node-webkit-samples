@@ -16,9 +16,18 @@
 
    ;; hello-world build
    {:hello-world
-    {:source-paths ["src/cljs/hello_world"]
+    {:source-paths ["src/hello_world"]
     :compiler
     {:output-to "resources/public/hello_world/js/hello_world.js"
     :optimizations :whitespace
-    :pretty-print true}}}})
-  
+    :pretty-print true}}
+   
+   ;; frameless-window build
+    :frameless-window
+    {:source-paths ["src/frameless_window"]
+    :compiler
+    {:output-to "resources/public/frameless_window/js/frameless_window.js"
+    :optimizations :whitespace
+    :pretty-print true}}}
+   
+   })
