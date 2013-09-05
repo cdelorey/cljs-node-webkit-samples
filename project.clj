@@ -22,6 +22,14 @@
     {:output-to "resources/public/hello_world/js/hello_world.js"
     :optimizations :whitespace
     :pretty-print true}}
+    
+    ;; menus build
+    :menus
+    {:source-paths ["src/menus"]
+    :compiler
+    {:output-to "resources/public/menus/menus.js"
+    :optimizations :whitespace
+    :pretty-print true}}
    
    ;; frameless-window build
     :frameless-window
