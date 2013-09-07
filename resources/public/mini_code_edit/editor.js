@@ -28374,11 +28374,54 @@ cljs_node_webkit_examples.editor.gui = require("nw.gui");
 cljs_node_webkit_examples.editor.fs = require("fs");
 cljs_node_webkit_examples.editor.clipboard = cljs_node_webkit_examples.editor.gui.Clipboard.get();
 cljs_node_webkit_examples.editor.editor = cljs.core.atom.call(null, null);
+cljs_node_webkit_examples.editor.file_entry = cljs.core.atom.call(null, null);
+cljs_node_webkit_examples.editor.has_write_access = cljs.core.atom.call(null, null);
+cljs_node_webkit_examples.editor.set_title = function set_title(title) {
+  if(cljs.core.truth_(title)) {
+    var title__$1 = cljs.core.nth.call(null, title.match(/[^\/]+$/), 0);
+    domina.by_id.call(null, "title")["innerHTML"] = title__$1;
+    return document["title"] = title__$1
+  }else {
+    return domina.by_id.call(null, "title")["innerHTML"] = "[no document loaded"
+  }
+};
+cljs_node_webkit_examples.editor.get_mode = function get_mode(title) {
+  if(cljs.core.truth_(title)) {
+    if(cljs.core.truth_(title.match(/.json$/))) {
+      return cljs.core.PersistentVector.fromArray([cljs.core.clj__GT_js.call(null, cljs.core.PersistentArrayMap.fromArray(["name", "javascript", "json", true], true)), "Javascript (JSON)"], true)
+    }else {
+      if(cljs.core.truth_(title.match(/.html$/))) {
+        return cljs.core.PersistentVector.fromArray(["htmlmixed", "HTML"], true)
+      }else {
+        if(cljs.core.truth_(title.match(/.css$/))) {
+          return cljs.core.PersistentVector.fromArray(["css", "CSS"], true)
+        }else {
+          return null
+        }
+      }
+    }
+  }else {
+    return null
+  }
+};
+cljs_node_webkit_examples.editor.handle_document_change = function handle_document_change(title) {
+  var title__$1 = cljs_node_webkit_examples.editor.set_title.call(null, title);
+  var vec__3668 = cljs_node_webkit_examples.editor.get_mode.call(null, title__$1);
+  var mode = cljs.core.nth.call(null, vec__3668, 0, null);
+  var mode_name = cljs.core.nth.call(null, vec__3668, 1, null);
+  cljs.core.deref.call(null, cljs_node_webkit_examples.editor.editor).setOption("mode", mode);
+  return domina.by_id.call(null, "mode")["innerHTML"] = mode_name
+};
 cljs_node_webkit_examples.editor.on_chosen_file_to_save = function on_chosen_file_to_save(fileEntry) {
   return console.log("save file")
 };
 cljs_node_webkit_examples.editor.on_chosen_file_to_open = function on_chosen_file_to_open(file_entry) {
   return console.log("deal with file")
+};
+cljs_node_webkit_examples.editor.new_file = function new_file() {
+  cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.file_entry, null);
+  cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.has_write_access, null);
+  return cljs_node_webkit_examples.editor.handle_document_change.call(null, null)
 };
 cljs_node_webkit_examples.editor.handle_new_button = function handle_new_button() {
   return console.log("clicked new")
@@ -28414,14 +28457,14 @@ cljs_node_webkit_examples.editor.init_context_menu = function init_context_menu(
   var cut = cljs_node_webkit_examples.editor.create_item.call(null, cljs.core.PersistentArrayMap.fromArray(["label", "Cut", "click", cljs_node_webkit_examples.editor.cut_func], true));
   var paste = cljs_node_webkit_examples.editor.create_item.call(null, cljs.core.PersistentArrayMap.fromArray(["label", "Paste", "click", cljs_node_webkit_examples.editor.paste_func], true));
   var context_menu = function() {
-    var G__3669 = new menu;
-    G__3669.append(copy);
-    G__3669.append(cut);
-    G__3669.append(paste);
-    return G__3669
+    var G__3671 = new menu;
+    G__3671.append(copy);
+    G__3671.append(cut);
+    G__3671.append(paste);
+    return G__3671
   }();
-  return domina.events.listen_BANG_.call(null, domina.by_id.call(null, "editor"), "\ufdd0:contextmenu", function(p1__3667_SHARP_) {
-    return cljs_node_webkit_examples.editor.contextmenu_listener.call(null, p1__3667_SHARP_, context_menu)
+  return domina.events.listen_BANG_.call(null, domina.by_id.call(null, "editor"), "\ufdd0:contextmenu", function(p1__3669_SHARP_) {
+    return cljs_node_webkit_examples.editor.contextmenu_listener.call(null, p1__3669_SHARP_, context_menu)
   })
 };
 cljs_node_webkit_examples.editor.new_editor = function new_editor() {
@@ -28443,6 +28486,7 @@ cljs_node_webkit_examples.editor.init = function init() {
   domina.events.listen_BANG_.call(null, save_file, "\ufdd0:change", function() {
     return cljs_node_webkit_examples.editor.on_chosen_file_to_save.call(null, save_file)
   });
-  return cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.editor, cljs_node_webkit_examples.editor.new_editor.call(null))
+  cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.editor, cljs_node_webkit_examples.editor.new_editor.call(null));
+  return cljs_node_webkit_examples.editor.new_file.call(null)
 };
 domina.events.listen_BANG_.call(null, window, "\ufdd0:load", cljs_node_webkit_examples.editor.init);
