@@ -1,5 +1,5 @@
 (ns cljs-node-webkit-examples.editor
-  (:use [domina :only [by-id]]
+  (:use [domina :only [by-id set-style!]]
         [domina.events :only [listen! dispatch! prevent-default]]))
 
 (def gui (js/require "nw.gui"))
@@ -99,6 +99,15 @@
 
 
 ;; init -----------------------------------------------------------------------
+(defn on-resize []
+  (let [container (by-id "editor")
+        container-width (aget container "offsetWidth")
+        container-height (aget container "offsetHeight")
+        scroller-element (.getScrollerElement @editor)]
+    (set-style! scroller-element "width" (str container-width "px"))
+    (set-style! scroller-element "height" (str container-height "px"))
+    (.refresh @editor)))
+
 (defn new-editor []
   (js/CodeMirror (by-id "editor") 
                  (clj->js {"mode" {"name" "javascript" "json" "true"}
@@ -120,6 +129,7 @@
     (listen! open-file :change #(on-chosen-file-to-open open-file))
     (listen! save-file :change #(on-chosen-file-to-save save-file))
     (reset! editor (new-editor))
-    (new-file)))
+    (new-file)
+    (on-resize)))
 
 (listen! js/window :load init)

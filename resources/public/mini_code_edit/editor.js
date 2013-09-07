@@ -28467,6 +28467,15 @@ cljs_node_webkit_examples.editor.init_context_menu = function init_context_menu(
     return cljs_node_webkit_examples.editor.contextmenu_listener.call(null, p1__3669_SHARP_, context_menu)
   })
 };
+cljs_node_webkit_examples.editor.on_resize = function on_resize() {
+  var container = domina.by_id.call(null, "editor");
+  var container_width = container["offsetWidth"];
+  var container_height = container["offsetHeight"];
+  var scroller_element = cljs.core.deref.call(null, cljs_node_webkit_examples.editor.editor).getScrollerElement();
+  domina.set_style_BANG_.call(null, scroller_element, "width", [cljs.core.str(container_width), cljs.core.str("px")].join(""));
+  domina.set_style_BANG_.call(null, scroller_element, "height", [cljs.core.str(container_height), cljs.core.str("px")].join(""));
+  return cljs.core.deref.call(null, cljs_node_webkit_examples.editor.editor).refresh()
+};
 cljs_node_webkit_examples.editor.new_editor = function new_editor() {
   return CodeMirror(domina.by_id.call(null, "editor"), cljs.core.clj__GT_js.call(null, cljs.core.PersistentArrayMap.fromArray(["mode", cljs.core.PersistentArrayMap.fromArray(["name", "javascript", "json", "true"], true), "lineNumbers", "true", "theme", "lesser-dark", "extraKeys", cljs.core.PersistentArrayMap.fromArray(["Cmd-S", cljs_node_webkit_examples.editor.handle_save_button, "Ctrl-S", cljs_node_webkit_examples.editor.handle_save_button], true)], true)))
 };
@@ -28487,6 +28496,7 @@ cljs_node_webkit_examples.editor.init = function init() {
     return cljs_node_webkit_examples.editor.on_chosen_file_to_save.call(null, save_file)
   });
   cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.editor, cljs_node_webkit_examples.editor.new_editor.call(null));
-  return cljs_node_webkit_examples.editor.new_file.call(null)
+  cljs_node_webkit_examples.editor.new_file.call(null);
+  return cljs_node_webkit_examples.editor.on_resize.call(null)
 };
 domina.events.listen_BANG_.call(null, window, "\ufdd0:load", cljs_node_webkit_examples.editor.init);
