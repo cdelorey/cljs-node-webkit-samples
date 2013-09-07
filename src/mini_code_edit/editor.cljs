@@ -52,8 +52,15 @@
 
 ;; button click handlers ------------------------------------------------------
 (defn handle-new-button []
-  (.log js/console "clicked new"))
-
+  (if false
+    (do
+      (new-file)
+      (.setValue @editor ""))
+    (let [x (+ 10 (.-screenX js/window))
+          y (+ 10 (.-screenY js/window))]
+      (.open js/window "main.html" "_blank" 
+             (str "screenX=" x) (str "screenY=") y))))
+ 
 (defn handle-open-button []
   (.click (by-id "openFile")))
 

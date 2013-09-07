@@ -28424,7 +28424,14 @@ cljs_node_webkit_examples.editor.new_file = function new_file() {
   return cljs_node_webkit_examples.editor.handle_document_change.call(null, null)
 };
 cljs_node_webkit_examples.editor.handle_new_button = function handle_new_button() {
-  return console.log("clicked new")
+  if(false) {
+    cljs_node_webkit_examples.editor.new_file.call(null);
+    return cljs.core.deref.call(null, cljs_node_webkit_examples.editor.editor).setValue("")
+  }else {
+    var x = 10 + window.screenX;
+    var y = 10 + window.screenY;
+    return window.open("main.html", "_blank", [cljs.core.str("screenX="), cljs.core.str(x)].join(""), [cljs.core.str("screenY=")].join(""), y)
+  }
 };
 cljs_node_webkit_examples.editor.handle_open_button = function handle_open_button() {
   return domina.by_id.call(null, "openFile").click()
