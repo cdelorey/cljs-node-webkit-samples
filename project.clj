@@ -30,6 +30,15 @@
     {:output-to "resources/public/menus/menus.js"
     :optimizations :whitespace
     :pretty-print true}}
+    
+    ;; menus build
+    :mini-code-edit
+    {:source-paths ["src/mini_code_edit"]
+    :compiler
+    {:output-to "resources/public/mini_code_edit/editor.js"
+    :externs ["resources/public/mini_code_edit/externs.js"]
+    :optimizations :whitespace
+    :pretty-print true}}
    
    ;; frameless-window build
     :frameless-window
