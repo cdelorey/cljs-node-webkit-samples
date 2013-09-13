@@ -34,7 +34,7 @@
   [title]
   (let [title (set-title title)
         [mode mode-name] (get-mode title)]
-    (.setOption @editor "mode" mode)
+    (swap! editor #(.setOption % "mode" mode))
     (aset (by-id "mode") "innerHTML" mode-name)))
 
 ;; file functions -------------------------------------------------------------
@@ -88,7 +88,7 @@
   (if false
     (do
       (new-file)
-      (.setValue @editor ""))
+      (swap! editor #(.setValue % "")))
     (let [x (+ 10 (.-screenX js/window))
           y (+ 10 (.-screenY js/window))]
       (.open js/window "main.html" "_blank" 
@@ -115,7 +115,7 @@
 (defn cut-func []
   (do
     (.set clipboard (.getSelection @editor))
-    (.replaceSelection @editor "")))
+    (swap! editor #(.replaceSelection % ""))))
 
 (defn paste-func []
   (.replaceSelection @editor (.get clipboard)))
@@ -148,7 +148,7 @@
         scroller-element (.getScrollerElement @editor)]
     (set-style! scroller-element "width" (str container-width "px"))
     (set-style! scroller-element "height" (str container-height "px"))
-    (.refresh @editor)))
+    (swap! editor #(.refresh %))))
 
 (defn new-editor []
   (js/CodeMirror (by-id "editor") 
