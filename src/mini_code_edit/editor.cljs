@@ -1,5 +1,5 @@
 (ns cljs-node-webkit-examples.editor
-  (:use [domina :only [by-id set-style!]]
+  (:use [domina :only [by-id set-style! value]]
         [domina.events :only [listen! dispatch! prevent-default]]))
 
 (def gui (js/require "nw.gui"))
@@ -38,10 +38,31 @@
     (aset (by-id "mode") "innerHTML" mode-name)))
 
 ;; file functions -------------------------------------------------------------
-(defn on-chosen-file-to-save [fileEntry]
-  (.log js/console "save file"))
+(defn write-editor-to-file
+  [file]
+  (let [data (.getValue @editor)]
+    (.log js/console (str "file-entry: " file))
+    (.writeFile fs file data 
+                #(if % 
+                   (.log js/console (str "Write failed:" %))
+                   (do
+                     (handle-document-change file)
+                     (.log js/console "Write completed."))))))
 
-(defn on-chosen-file-to-open [file-entry]
+(defn set-file 
+  [file writeable?]
+  (do
+    (reset! file-entry file)
+    (reset! has-write-access writeable?)))
+
+(defn on-chosen-file-to-save 
+  [file]
+  (do
+    (set-file file true)
+    (write-editor-to-file file)))
+
+(defn on-chosen-file-to-open 
+  [file-entry]
   (.log js/console "deal with file"))
 
 (defn new-file []
@@ -65,7 +86,9 @@
   (.click (by-id "openFile")))
 
 (defn handle-save-button []
-  (.log js/console "clicked save"))
+  (if (and @file-entry @has-write-access)
+    (write-editor-to-file @file-entry)
+    (.click (by-id "saveFile"))))
 
 
 ;; context-menu ---------------------------------------------------------------
@@ -133,8 +156,8 @@
     (listen! new-button :click handle-new-button)
     (listen! open-button :click handle-open-button)
     (listen! save-button :click handle-save-button)
-    (listen! open-file :change #(on-chosen-file-to-open open-file))
-    (listen! save-file :change #(on-chosen-file-to-save save-file))
+    (listen! open-file :change #(on-chosen-file-to-open (value open-file)))
+    (listen! save-file :change #(on-chosen-file-to-save (value save-file)))
     (reset! editor (new-editor))
     (new-file)
     (on-resize)))

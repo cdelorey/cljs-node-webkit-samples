@@ -28406,14 +28406,31 @@ cljs_node_webkit_examples.editor.get_mode = function get_mode(title) {
 };
 cljs_node_webkit_examples.editor.handle_document_change = function handle_document_change(title) {
   var title__$1 = cljs_node_webkit_examples.editor.set_title.call(null, title);
-  var vec__3668 = cljs_node_webkit_examples.editor.get_mode.call(null, title__$1);
-  var mode = cljs.core.nth.call(null, vec__3668, 0, null);
-  var mode_name = cljs.core.nth.call(null, vec__3668, 1, null);
+  var vec__3669 = cljs_node_webkit_examples.editor.get_mode.call(null, title__$1);
+  var mode = cljs.core.nth.call(null, vec__3669, 0, null);
+  var mode_name = cljs.core.nth.call(null, vec__3669, 1, null);
   cljs.core.deref.call(null, cljs_node_webkit_examples.editor.editor).setOption("mode", mode);
   return domina.by_id.call(null, "mode")["innerHTML"] = mode_name
 };
-cljs_node_webkit_examples.editor.on_chosen_file_to_save = function on_chosen_file_to_save(fileEntry) {
-  return console.log("save file")
+cljs_node_webkit_examples.editor.write_editor_to_file = function write_editor_to_file(file) {
+  var data = cljs.core.deref.call(null, cljs_node_webkit_examples.editor.editor).getValue();
+  console.log([cljs.core.str("file-entry: "), cljs.core.str(file)].join(""));
+  return cljs_node_webkit_examples.editor.fs.writeFile(file, data, function(p1__3667_SHARP_) {
+    if(cljs.core.truth_(p1__3667_SHARP_)) {
+      return console.log([cljs.core.str("Write failed:"), cljs.core.str(p1__3667_SHARP_)].join(""))
+    }else {
+      cljs_node_webkit_examples.editor.handle_document_change.call(null, file);
+      return console.log("Write completed.")
+    }
+  })
+};
+cljs_node_webkit_examples.editor.set_file = function set_file(file, writeable_QMARK_) {
+  cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.file_entry, file);
+  return cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.has_write_access, writeable_QMARK_)
+};
+cljs_node_webkit_examples.editor.on_chosen_file_to_save = function on_chosen_file_to_save(file) {
+  cljs_node_webkit_examples.editor.set_file.call(null, file, true);
+  return cljs_node_webkit_examples.editor.write_editor_to_file.call(null, file)
 };
 cljs_node_webkit_examples.editor.on_chosen_file_to_open = function on_chosen_file_to_open(file_entry) {
   return console.log("deal with file")
@@ -28437,7 +28454,18 @@ cljs_node_webkit_examples.editor.handle_open_button = function handle_open_butto
   return domina.by_id.call(null, "openFile").click()
 };
 cljs_node_webkit_examples.editor.handle_save_button = function handle_save_button() {
-  return console.log("clicked save")
+  if(cljs.core.truth_(function() {
+    var and__3941__auto__ = cljs.core.deref.call(null, cljs_node_webkit_examples.editor.file_entry);
+    if(cljs.core.truth_(and__3941__auto__)) {
+      return cljs.core.deref.call(null, cljs_node_webkit_examples.editor.has_write_access)
+    }else {
+      return and__3941__auto__
+    }
+  }())) {
+    return cljs_node_webkit_examples.editor.write_editor_to_file.call(null, cljs.core.deref.call(null, cljs_node_webkit_examples.editor.file_entry))
+  }else {
+    return domina.by_id.call(null, "saveFile").click()
+  }
 };
 cljs_node_webkit_examples.editor.create_item = function create_item(args) {
   var menu_item = cljs_node_webkit_examples.editor.gui.MenuItem;
@@ -28464,14 +28492,14 @@ cljs_node_webkit_examples.editor.init_context_menu = function init_context_menu(
   var cut = cljs_node_webkit_examples.editor.create_item.call(null, cljs.core.PersistentArrayMap.fromArray(["label", "Cut", "click", cljs_node_webkit_examples.editor.cut_func], true));
   var paste = cljs_node_webkit_examples.editor.create_item.call(null, cljs.core.PersistentArrayMap.fromArray(["label", "Paste", "click", cljs_node_webkit_examples.editor.paste_func], true));
   var context_menu = function() {
-    var G__3671 = new menu;
-    G__3671.append(copy);
-    G__3671.append(cut);
-    G__3671.append(paste);
-    return G__3671
+    var G__3672 = new menu;
+    G__3672.append(copy);
+    G__3672.append(cut);
+    G__3672.append(paste);
+    return G__3672
   }();
-  return domina.events.listen_BANG_.call(null, domina.by_id.call(null, "editor"), "\ufdd0:contextmenu", function(p1__3669_SHARP_) {
-    return cljs_node_webkit_examples.editor.contextmenu_listener.call(null, p1__3669_SHARP_, context_menu)
+  return domina.events.listen_BANG_.call(null, domina.by_id.call(null, "editor"), "\ufdd0:contextmenu", function(p1__3670_SHARP_) {
+    return cljs_node_webkit_examples.editor.contextmenu_listener.call(null, p1__3670_SHARP_, context_menu)
   })
 };
 cljs_node_webkit_examples.editor.on_resize = function on_resize() {
@@ -28497,10 +28525,10 @@ cljs_node_webkit_examples.editor.init = function init() {
   domina.events.listen_BANG_.call(null, open_button, "\ufdd0:click", cljs_node_webkit_examples.editor.handle_open_button);
   domina.events.listen_BANG_.call(null, save_button, "\ufdd0:click", cljs_node_webkit_examples.editor.handle_save_button);
   domina.events.listen_BANG_.call(null, open_file, "\ufdd0:change", function() {
-    return cljs_node_webkit_examples.editor.on_chosen_file_to_open.call(null, open_file)
+    return cljs_node_webkit_examples.editor.on_chosen_file_to_open.call(null, domina.value.call(null, open_file))
   });
   domina.events.listen_BANG_.call(null, save_file, "\ufdd0:change", function() {
-    return cljs_node_webkit_examples.editor.on_chosen_file_to_save.call(null, save_file)
+    return cljs_node_webkit_examples.editor.on_chosen_file_to_save.call(null, domina.value.call(null, save_file))
   });
   cljs.core.reset_BANG_.call(null, cljs_node_webkit_examples.editor.editor, cljs_node_webkit_examples.editor.new_editor.call(null));
   cljs_node_webkit_examples.editor.new_file.call(null);
