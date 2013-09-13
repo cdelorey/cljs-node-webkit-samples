@@ -41,13 +41,24 @@
 (defn write-editor-to-file
   [file]
   (let [data (.getValue @editor)]
-    (.log js/console (str "file-entry: " file))
     (.writeFile fs file data 
                 #(if % 
                    (.log js/console (str "Write failed:" %))
                    (do
                      (handle-document-change file)
                      (.log js/console "Write completed."))))))
+
+(defn read-listener
+  [error data file]
+  (if error
+    (.log js/console (str "Read failed: " error))
+    (do
+      (handle-document-change file)
+      (swap! editor #(.setValue % (str data))))))
+
+(defn read-file-into-editor
+  [file]
+  (.readFile fs file #(read-listener %1 %2 file)))
 
 (defn set-file 
   [file writeable?]
@@ -62,8 +73,9 @@
     (write-editor-to-file file)))
 
 (defn on-chosen-file-to-open 
-  [file-entry]
-  (.log js/console "deal with file"))
+  [file]
+  (set-file file false)
+  (read-file-into-editor file))
 
 (defn new-file []
   (reset! file-entry nil)
